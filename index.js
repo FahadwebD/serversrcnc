@@ -2,8 +2,9 @@ const express = require('express')
 const app = express()
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { MongoClient } = require('mongodb');
+const { MongoClient , ServerApiVersion  } = require('mongodb');
 const ObjectId = require("mongodb").ObjectId;
 const fileUpload = require('express-fileupload');
 
@@ -16,24 +17,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json())
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ffrgt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1  });
 
-async function verifyToken(req, res, next) {
-    if (req.headers?.authorization?.startsWith('Bearer ')) {
-        const token = req.headers.authorization.split(' ')[1];
-
-        try {
-            const decodedUser = await admin.auth().verifyIdToken(token);
-            req.decodedEmail = decodedUser.email;
-        }
-        catch {
-
-        }
-
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).send({ message: 'UnAuthorized access' });
     }
-    next();
-}
-
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+      if (err) {
+        return res.status(403).send({ message: 'Forbidden access' })
+      }
+      req.decoded = decoded;
+      next();
+    });
+  }
 async function run (){
 
     try{
@@ -45,14 +44,62 @@ async function run (){
         const welcomeCollection = database.collection('welcomeMassage');
         const staffCollection = database.collection('staff');
         const studentCollection = database.collection('student');
+        const userCollection = database.collection('users')
 
 
+        const verifyAdmin = async (req, res, next) => {
+            const requester = req.decoded.email;
+            const requesterAccount = await userCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
+              next();
+            }
+            else {
+              res.status(403).send({ message: 'forbidden' });
+            }
+          }
 
 
-       
+       //user
+
+
+       app.get('/user', verifyJWT, async (req, res) => {
+        const users = await userCollection.find().toArray();
+        res.send(users);
+      });
+  
+      app.get('/admin/:email', async (req, res) => {
+        const email = req.params.email;
+        const user = await userCollection.findOne({ email: email });
+        const isAdmin = user.role === 'admin';
+        res.send({ admin: isAdmin })
+      })
+  
+      app.put('/user/admin/:email', verifyJWT,verifyAdmin,  async (req, res) => {
+        const email = req.params.email;
+        const filter = { email: email };
+        const updateDoc = {
+          $set: { role: 'admin' },
+        };
+        const result = await userCollection.updateOne(filter, updateDoc);
+        res.send(result);
+      })
+  
+      app.put('/user/:email', async (req, res) => {
+        const email = req.params.email;
+        const user = req.body;
+        const filter = { email: email };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: user,
+        };
+        const result = await userCollection.updateOne(filter, updateDoc, options);
+        const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+        res.send({ result, token });
+      });
+
         //banner data 
 
-        app.post('/banner', async (req, res) => {
+        app.post('/banner', verifyJWT, verifyAdmin, async (req, res) => {
             const caption = req.body.caption;
             const pic = req.files.image;
             console.log(pic)
@@ -74,7 +121,7 @@ async function run (){
             res.json(banners);
         });
 
-        app.delete('/banner/:id' , async(req , res)=>{
+        app.delete('/banner/:id' , verifyJWT, verifyAdmin, async(req , res)=>{
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const data = await bannerCollection.deleteOne(query);
@@ -82,7 +129,7 @@ async function run (){
             res.json(data);
         })
 
-        app.put('/banner/edit', async(req,res)=>{
+        app.put('/banner/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         
             const id = req.body._id
             const caption = req.body.caption;
@@ -112,7 +159,7 @@ async function run (){
             res.send(numbers)
         })
         
-        app.put('/numbers/edit', async(req,res)=>{
+        app.put('/numbers/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         
             const id = req.body._id
             const numberTitle = req.body.titles;
@@ -128,6 +175,7 @@ async function run (){
             console.log(result)
             res.json(result)
         }) 
+     //welcome
 
         app.get('/welcome' , async(req , res)=>{
             const cursor = welcomeCollection.find({});
@@ -135,11 +183,30 @@ async function run (){
             res.send(welcome)
         })
 
+
+app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
+        
+            const id = req.body._id
+            const welcomeMassage = req.body.massage;
+            const youtubeLink = req.body.youtube;
+            
+        
+            const filter = {_id: ObjectId(id)};
+            console.log(filter)
+            
+            const updateDoc = {$set:  {massage:welcomeMassage, linkYoutube:youtubeLink} };
+          
+            const result = await welcomeCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
         //staff management 
 
-        app.post('/staff', async (req, res) => {
+        app.post('/staff', verifyJWT, verifyAdmin, async (req, res) => {
             const name = req.body.name;
             const designation = req.body.designation;
+            const categoryStaff = req.body.categoryStaff;
+
             const mobile = req.body.mobile;
             const pic = req.files.image;
             const picData = pic.data;
@@ -148,6 +215,7 @@ async function run (){
             const data = {
                 name,
                 designation,
+                categoryStaff,
                 mobile,
                 image: imageBuffer
             }
@@ -160,7 +228,7 @@ async function run (){
             res.json(saffs);
         });
 
-        app.delete('/staff/:id' , async(req , res)=>{
+        app.delete('/staff/:id' , verifyJWT, verifyAdmin, async(req , res)=>{
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const data = await staffCollection.deleteOne(query);
@@ -171,7 +239,7 @@ async function run (){
         //student Manage 
 
 
-        app.post('/student', async (req, res) => {
+        app.post('/student', verifyJWT, verifyAdmin, async (req, res) => {
             const name = req.body.name;
             const roll = req.body.roll;
             const sessionStart = req.body.sessionStart;
@@ -208,7 +276,35 @@ async function run (){
             res.json(saffs);
         });
 
-        app.delete('/student/:id' , async(req , res)=>{
+
+        app.get('/student/home', verifyJWT, verifyAdmin, async(req, res) =>{
+            console.log('query', req.query);
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
+
+            const query = {};
+            const cursor = studentCollection.find(query);
+            let students;
+            if(page || size){
+                // 0 --> skip: 0 get: 0-10(10): 
+                // 1 --> skip: 1*10 get: 11-20(10):
+                // 2 --> skip: 2*10 get: 21-30 (10):
+                // 3 --> skip: 3*10 get: 21-30 (10):
+                students = await cursor.skip(page*size).limit(size).toArray();
+            }
+            else{
+                students = await cursor.toArray();
+            }
+            
+            res.send(students);
+        });
+        app.get('/studentCount', async(req, res) =>{
+            const count = await studentCollection.estimatedDocumentCount();
+            res.send({count});
+        });
+
+
+        app.delete('/student/:id' , verifyJWT, verifyAdmin, async(req , res)=>{
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const data = await studentCollection.deleteOne(query);
