@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const nodemailer = require("nodemailer");
 require('dotenv').config();
 const { MongoClient , ServerApiVersion  } = require('mongodb');
 const ObjectId = require("mongodb").ObjectId;
@@ -33,6 +34,24 @@ function verifyJWT(req, res, next) {
       next();
     });
   }
+
+//   const contactEmail = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//       user: "moviedekhtam24hr@gmail.com",
+//       pass: "movie@321",
+//     },
+//   });
+  
+//   contactEmail.verify((error) => {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       console.log("Ready to Send");
+//     }
+//   });
+
+
 async function run (){
 
     try{
@@ -45,7 +64,7 @@ async function run (){
         const staffCollection = database.collection('staff');
         const studentCollection = database.collection('student');
         const userCollection = database.collection('users')
-
+        
 
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
@@ -57,7 +76,30 @@ async function run (){
               res.status(403).send({ message: 'forbidden' });
             }
           }
+ 
 
+          //contact
+
+        //  app.post("/contact", (req, res) => {
+        //     const name = req.body.name;
+        //     const email = req.body.email;
+        //     const message = req.body.message; 
+        //     const mail = {
+        //       from: name,
+        //       to: "moviedekhtam24hr@gmail.com",
+        //       subject: "Contact Form Submission",
+        //       html: `<p>Name: ${name}</p>
+        //              <p>Email: ${email}</p>
+        //              <p>Message: ${message}</p>`,
+        //     };
+        //     contactEmail.sendMail(mail, (error) => {
+        //       if (error) {
+        //         res.json({ status: "ERROR" });
+        //       } else {
+        //         res.json({ status: "Message Sent" });
+        //       }
+        //     });
+        //   });
 
        //user
 
