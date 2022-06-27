@@ -141,7 +141,7 @@ async function run (){
 
         //banner data 
 
-        app.post('/banner', verifyJWT, verifyAdmin, async (req, res) => {
+        app.post('/banner', async (req, res) => {
             const caption = req.body.caption;
             const pic = req.files.image;
             console.log(pic)
@@ -171,12 +171,12 @@ async function run (){
             res.json(data);
         })
 
-        app.put('/banner/edit', verifyJWT, verifyAdmin, async(req,res)=>{
+        app.put('/banner/edit',  async(req,res)=>{
         
             const id = req.body._id
             const caption = req.body.caption;
      
-         
+          console.log(id)
             
             const filter = {_id: ObjectId(id)};
             console.log(filter)
@@ -207,7 +207,7 @@ async function run (){
             const numberTitle = req.body.titles;
             const numbersCount = req.body.numbers;
             
-        
+            console.log(id)
             const filter = {_id: ObjectId(id)};
             console.log(filter)
             
@@ -278,6 +278,25 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             res.json(data);
         })
 
+        app.put('/staff/edit',  async(req,res)=>{
+        
+            const id = req.body._id
+            const name = req.body.name;
+            const designation = req.body.designation;
+            const categoryStaff = req.body.categoryStaff;
+            const mobile = req.body.mobile;
+            
+           console.log(id)
+            const filter = {_id: ObjectId(id)};
+            console.log(filter)
+            
+            const updateDoc = {$set:  {name:name, designation:designation, categoryStaff:categoryStaff, mobile:mobile} };
+          
+            const result = await staffCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
+
         //student Manage 
 
 
@@ -319,7 +338,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         });
 
 
-        app.get('/student/home', verifyJWT, verifyAdmin, async(req, res) =>{
+        app.get('/student/home', async(req, res) =>{
             console.log('query', req.query);
             const page = parseInt(req.query.page);
             const size = parseInt(req.query.size);
