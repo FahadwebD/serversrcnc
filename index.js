@@ -260,7 +260,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         //student Manage 
 
 
-        app.post('/student', verifyJWT, verifyAdmin, async (req, res) => {
+        app.post('/student', async (req, res) => {
             const name = req.body.name;
             const roll = req.body.roll;
             const sessionStart = req.body.sessionStart;
