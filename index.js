@@ -101,7 +101,7 @@ async function run (){
 
         //banner data 
 
-        app.post('/banner', async (req, res) => {
+        app.post('/banner', verifyJWT, verifyAdmin, async (req, res) => {
             const caption = req.body.caption;
             const pic = req.files.image;
             console.log(pic)
@@ -131,7 +131,7 @@ async function run (){
             res.json(data);
         })
 
-        app.put('/banner/edit',  async(req,res)=>{
+        app.put('/banner/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         
             const id = req.body._id
             const caption = req.body.caption;
@@ -238,7 +238,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             res.json(data);
         })
 
-        app.put('/staff/edit',  async(req,res)=>{
+        app.put('/staff/edit',verifyJWT, verifyAdmin,  async(req,res)=>{
         
             const id = req.body._id
             const name = req.body.name;
@@ -260,7 +260,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         //student Manage 
 
 
-        app.post('/student', async (req, res) => {
+        app.post('/student',verifyJWT, verifyAdmin, async (req, res) => {
             const name = req.body.name;
             const roll = req.body.roll;
             const sessionStart = req.body.sessionStart;
@@ -297,7 +297,27 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             res.json(saffs);
         });
 
+        app.put('/student/edit',verifyJWT, verifyAdmin,  async(req,res)=>{
+            const id = req.body._id
+            const name = req.body.name;
+            const roll = req.body.roll;
+            const sessionStart = req.body.sessionStart;
+            const sessionEnd = req.body.sessionEnd;
+            const regNo = req.body.regNo;
+            const course = req.body.course;
+            const category = req.body.category;
+            const mobile = req.body.mobile;
 
+           console.log(id)
+            const filter = {_id: ObjectId(id)};
+            console.log(filter)
+            
+            const updateDoc = {$set:  {name:name, roll:roll, sessionStart:sessionStart,sessionEnd:sessionEnd,regNo:regNo,course:course,category:category, mobile:mobile} };
+          
+            const result = await studentCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
         app.get('/student/home', async(req, res) =>{
             console.log('query', req.query);
             const page = parseInt(req.query.page);
