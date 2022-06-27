@@ -3,14 +3,11 @@ const app = express()
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-const nodemailer = require("nodemailer");
 require('dotenv').config();
 const { MongoClient , ServerApiVersion  } = require('mongodb');
 const ObjectId = require("mongodb").ObjectId;
 const fileUpload = require('express-fileupload');
-
 const port = process.env.PORT || 5000;
-
 app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
@@ -36,21 +33,6 @@ function verifyJWT(req, res, next) {
     });
   }
 
-// //   const contactEmail = nodemailer.createTransport({
-// //     service: 'gmail',
-// //     auth: {
-// //       user: "moviedekhtam24hr@gmail.com",
-// //       pass: "movie@321",
-// //     },
-// //   });
-  
-// //   contactEmail.verify((error) => {
-// //     if (error) {
-// //       console.log(error);
-// //     } else {
-// //       console.log("Ready to Send");
-// //     }
-// //   });
 
 
 async function run (){
@@ -78,28 +60,6 @@ async function run (){
             }
           }
 
-          //contact
-
-        //  app.post("/contact", (req, res) => {
-        //     const name = req.body.name;
-        //     const email = req.body.email;
-        //     const message = req.body.message; 
-        //     const mail = {
-        //       from: name,
-        //       to: "moviedekhtam24hr@gmail.com",
-        //       subject: "Contact Form Submission",
-        //       html: `<p>Name: ${name}</p>
-        //              <p>Email: ${email}</p>
-        //              <p>Message: ${message}</p>`,
-        //     };
-        //     contactEmail.sendMail(mail, (error) => {
-        //       if (error) {
-        //         res.json({ status: "ERROR" });
-        //       } else {
-        //         res.json({ status: "Message Sent" });
-        //       }
-        //     });
-        //   });
 
        //user
 
@@ -347,10 +307,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const cursor = studentCollection.find(query);
             let students;
             if(page || size){
-                // 0 --> skip: 0 get: 0-10(10): 
-                // 1 --> skip: 1*10 get: 11-20(10):
-                // 2 --> skip: 2*10 get: 21-30 (10):
-                // 3 --> skip: 3*10 get: 21-30 (10):
+              
                 students = await cursor.skip(page*size).limit(size).toArray();
             }
             else{
@@ -388,15 +345,8 @@ run().catch(console.dir);
 
 
 
-// client.connect(err => {
-//   const collection = client.db("test").collection("devices");
-//   // perform actions on the collection object
-//   console.log('hitting')
-//   client.close();
-// });
-
 app.get('/', ( req , res)=>{
-    res.send('doctorportal connected')
+    res.send('srcn connected')
 })
 
 app.listen(port , ()=>{
