@@ -17,8 +17,9 @@ app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json())
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ffrgt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1  });
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ia79a.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
 
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
@@ -35,21 +36,21 @@ function verifyJWT(req, res, next) {
     });
   }
 
-//   const contactEmail = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//       user: "moviedekhtam24hr@gmail.com",
-//       pass: "movie@321",
-//     },
-//   });
+// //   const contactEmail = nodemailer.createTransport({
+// //     service: 'gmail',
+// //     auth: {
+// //       user: "moviedekhtam24hr@gmail.com",
+// //       pass: "movie@321",
+// //     },
+// //   });
   
-//   contactEmail.verify((error) => {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       console.log("Ready to Send");
-//     }
-//   });
+// //   contactEmail.verify((error) => {
+// //     if (error) {
+// //       console.log(error);
+// //     } else {
+// //       console.log("Ready to Send");
+// //     }
+// //   });
 
 
 async function run (){
@@ -64,7 +65,7 @@ async function run (){
         const staffCollection = database.collection('staff');
         const studentCollection = database.collection('student');
         const userCollection = database.collection('users')
-        
+
 
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
@@ -76,7 +77,6 @@ async function run (){
               res.status(403).send({ message: 'forbidden' });
             }
           }
- 
 
           //contact
 
@@ -244,7 +244,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         }) 
         //staff management 
 
-        app.post('/staff', verifyJWT, verifyAdmin, async (req, res) => {
+        app.post('/staff', verifyJWT,verifyAdmin,  async (req, res) => {
             const name = req.body.name;
             const designation = req.body.designation;
             const categoryStaff = req.body.categoryStaff;
@@ -356,6 +356,8 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
 
     }
     
+    
+    
     finally{
         // await client.close();
     }
@@ -366,6 +368,13 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
 run().catch(console.dir);
 
 
+
+// client.connect(err => {
+//   const collection = client.db("test").collection("devices");
+//   // perform actions on the collection object
+//   console.log('hitting')
+//   client.close();
+// });
 
 app.get('/', ( req , res)=>{
     res.send('doctorportal connected')
