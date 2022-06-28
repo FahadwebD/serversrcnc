@@ -44,9 +44,12 @@ async function run (){
         const bannerCollection = database.collection('banner');
         const numberCollection = database.collection('numbers');
         const welcomeCollection = database.collection('welcomeMassage');
+        const footerCollection = database.collection('footerInfo');
         const staffCollection = database.collection('staff');
         const studentCollection = database.collection('student');
         const userCollection = database.collection('users')
+        const noticeCollection = database.collection('notice')
+        const eventCollection = database.collection('event')
 
 
         const verifyAdmin = async (req, res, next) => {
@@ -95,7 +98,7 @@ async function run (){
           $set: user,
         };
         const result = await userCollection.updateOne(filter, updateDoc, options);
-        const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+        const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5h' })
         res.send({ result, token });
       });
 
@@ -202,6 +205,134 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             console.log(result)
             res.json(result)
         }) 
+
+        /// foooter manage
+
+        app.get('/footerinfo' , async(req , res)=>{
+            const cursor = footerCollection.find({});
+            const footer = await cursor.toArray();
+            res.send(footer)
+        })
+
+
+          app.put('/footerinfo/edit',  async(req,res)=>{
+        
+            const id = req.body._id
+            const info = req.body.info;
+            
+        
+            const filter = {_id: ObjectId(id)};
+            console.log(filter)
+            
+            const updateDoc = {$set:  { info:info} };
+          
+            const result = await footerCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
+   
+
+        //Notice
+        app.post('/notice',   async (req, res) => {
+            const headline = req.body.headline;
+            const date = req.body.date;
+            const notice = req.body.notice;
+            const pic = req.files.image;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const data = {
+                headline,
+                date,
+                notice,
+                image: imageBuffer
+            }
+            const result = await noticeCollection.insertOne(data);
+            res.json(result);
+        })
+
+        app.get('/notice', async (req, res) => {
+            const cursor = noticeCollection.find({});
+            const saffs = await cursor.toArray();
+            res.json(saffs);
+        });
+        app.delete('/notice/:id' ,  async(req , res)=>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const data = await noticeCollection.deleteOne(query);
+            console.log('deleted item ' , data)
+            res.json(data);
+        })
+        app.put('/notice/edit', async(req,res)=>{
+        
+            const id = req.body._id
+            const headline = req.body.headline;
+            const date = req.body.date;
+            const notice = req.body.notice;
+            
+            
+        
+            const filter = {_id: ObjectId(id)};
+            
+            
+            const updateDoc = {$set:  {headline:headline, date:date, notice:notice} };
+          
+            const result = await noticeCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
+
+        //event
+        
+        app.get('/event', async (req, res) => {
+            const cursor = eventCollection.find({});
+            const saffs = await cursor.toArray();
+            res.json(saffs);
+        });
+
+        app.post('/event',   async (req, res) => {
+            const headline = req.body.headline;
+            const date = req.body.date;
+            const description = req.body.description;
+            const pic = req.files.image;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const data = {
+                headline,
+                date,
+                description,
+                image: imageBuffer
+            }
+            const result = await eventCollection.insertOne(data);
+            res.json(result);
+        })
+
+        app.put('/event/edit', async(req,res)=>{
+        
+            const id = req.body._id
+            const headline = req.body.headline;
+            const date = req.body.date;
+            const description = req.body.description;
+            
+            
+        
+            const filter = {_id: ObjectId(id)};
+            
+            
+            const updateDoc = {$set:  {headline:headline, date:date, description:description} };
+          
+            const result = await eventCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        })
+        app.delete('/event/:id' ,  async(req , res)=>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const data = await eventCollection.deleteOne(query);
+            console.log('deleted item ' , data)
+            res.json(data);
+        })
         //staff management 
 
         app.post('/staff', verifyJWT,verifyAdmin,  async (req, res) => {
@@ -269,9 +400,6 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const course = req.body.course;
             const category = req.body.category;
             const mobile = req.body.mobile;
-
-
-
             const pic = req.files.image;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
@@ -279,7 +407,6 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const data = {
                 name,
                 roll,
-            
                 regNo,
                 category,
                 course,
@@ -307,10 +434,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const course = req.body.course;
             const category = req.body.category;
             const mobile = req.body.mobile;
-
-           console.log(id)
             const filter = {_id: ObjectId(id)};
-            console.log(filter)
             
             const updateDoc = {$set:  {name:name, roll:roll, sessionStart:sessionStart,sessionEnd:sessionEnd,regNo:regNo,course:course,category:category, mobile:mobile} };
           
