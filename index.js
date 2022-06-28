@@ -50,6 +50,8 @@ async function run (){
         const userCollection = database.collection('users')
         const noticeCollection = database.collection('notice')
         const eventCollection = database.collection('event')
+        const gallaryCollection = database.collection('gallary')
+
 
 
         const verifyAdmin = async (req, res, next) => {
@@ -230,8 +232,55 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             console.log(result)
             res.json(result)
         }) 
-   
+    
 
+        //galrry
+
+        app.post('/gallary',   async (req, res) => {
+            const title = req.body.title;
+           const category =req.body.category
+            const pic = req.files.image;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const data = {
+                title,
+                category,
+                image: imageBuffer
+            }
+            const result = await gallaryCollection.insertOne(data);
+            res.json(result);
+        })
+        app.get('/gallary', async (req, res) => {
+            const cursor = gallaryCollection.find({});
+            const saffs = await cursor.toArray();
+            res.json(saffs);
+        });
+
+        app.delete('/gallary/:id' ,  async(req , res)=>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const data = await gallaryCollection.deleteOne(query);
+            console.log('deleted item ' , data)
+            res.json(data);
+        })
+
+        app.put('/gallary/edit',  async(req,res)=>{
+        
+            const id = req.body._id
+            const title = req.body.title;
+           
+        
+            const filter = {_id: ObjectId(id)};
+            console.log(filter)
+            
+            const updateDoc = {$set:  { title:title } };
+          
+            const result = await gallaryCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
+    
         //Notice
         app.post('/notice',   async (req, res) => {
             const headline = req.body.headline;
@@ -263,7 +312,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             console.log('deleted item ' , data)
             res.json(data);
         })
-        app.put('/notice/edit', async(req,res)=>{
+        app.patch('/notice/edit', async(req,res)=>{
         
             const id = req.body._id
             const headline = req.body.headline;
