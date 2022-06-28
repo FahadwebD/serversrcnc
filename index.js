@@ -312,7 +312,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             console.log('deleted item ' , data)
             res.json(data);
         })
-        app.patch('/notice/edit', async(req,res)=>{
+        app.put('/notice/edit', async(req,res)=>{
         
             const id = req.body._id
             const headline = req.body.headline;
@@ -473,7 +473,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             res.json(saffs);
         });
 
-        app.put('/student/edit',verifyJWT, verifyAdmin,  async(req,res)=>{
+        app.patch('/student/edit',  async(req,res)=>{
             const id = req.body._id
             const name = req.body.name;
             const roll = req.body.roll;
