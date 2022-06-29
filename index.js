@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const nodemailer = require("nodemailer");
 const { MongoClient , ServerApiVersion  } = require('mongodb');
 const ObjectId = require("mongodb").ObjectId;
 const fileUpload = require('express-fileupload');
@@ -32,9 +33,27 @@ function verifyJWT(req, res, next) {
       next();
     });
   }
+  const contactEmail = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+   
+        auth: {
+            user: "moviedekhtam24hr@gmail.com",
+            pass: "movietest@321",
+          },
+   
+    
+   
+  });
 
-
-
+  contactEmail.verify((error) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Ready to Send");
+    }
+  });
 async function run (){
 
     try{
@@ -52,7 +71,24 @@ async function run (){
         const eventCollection = database.collection('event')
         const gallaryCollection = database.collection('gallary')
 
-
+        app.post("/contact", (req, res) => {
+            const name = req.body.name;
+            const email = req.body.email;
+            const message = req.body.message; 
+            const mail = {
+              from: name,
+              to: "fahadchowdhury66779@gmail.com",
+              subject: "Contact Form Message",
+              html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
+            };
+            contactEmail.sendMail(mail, (error) => {
+              if (error) {
+                res.json({ status: "ERROR" });
+              } else {
+                res.json({ status: "Message Sent" });
+              }
+            });
+          });
 
         const verifyAdmin = async (req, res, next) => {
             const requester = req.decoded.email;
