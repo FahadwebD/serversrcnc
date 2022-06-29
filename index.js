@@ -312,14 +312,14 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
       
             res.json(notice);
         });
+        
         app.delete('/notice/:id' ,  async(req , res)=>{
-            const id = req.params._id;
+            const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const data = await noticeCollection.deleteOne(query);
             console.log('deleted item ' , data)
             res.json(data);
         })
-
 
 
         app.put('/notice/edit/:id', async(req,res)=>{
