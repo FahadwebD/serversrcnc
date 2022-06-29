@@ -305,31 +305,44 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const saffs = await cursor.toArray();
             res.json(saffs);
         });
+        app.get('/notice/:id', async (req, res) => {
+            const query = { _id: ObjectId(req.params.id) }
+            
+            const notice = await noticeCollection.findOne(query);
+      
+            res.json(notice);
+        });
         app.delete('/notice/:id' ,  async(req , res)=>{
-            const id = req.params.id;
+            const id = req.params._id;
             const query = { _id: ObjectId(id) };
             const data = await noticeCollection.deleteOne(query);
             console.log('deleted item ' , data)
             res.json(data);
         })
-        app.put('/notice/edit', async(req,res)=>{
+
+
+
+        app.put('/notice/edit/:id', async(req,res)=>{
         
-            const id = req.body._id
+            const id = req.params.id
             const headline = req.body.headline;
-            const date = req.body.date;
+         
             const notice = req.body.notice;
             
             
+    
         
             const filter = {_id: ObjectId(id)};
             
             
-            const updateDoc = {$set:  {headline:headline, date:date, notice:notice} };
+            const updateDoc = {$set:  {headline:headline, notice:notice} };
           
             const result = await noticeCollection.updateOne(filter, updateDoc );
             console.log(result)
             res.json(result)
         }) 
+
+
 
         //event
         
