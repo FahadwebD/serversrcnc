@@ -40,7 +40,7 @@ function verifyJWT(req, res, next) {
    
         auth: {
             user: "moviedekhtam24hr@gmail.com",
-            pass: "movietest@321",
+            pass: "iivwrgzvxpnryydb",
           },
    
     
@@ -77,8 +77,8 @@ async function run (){
             const message = req.body.message; 
             const mail = {
               from: name,
-              to: "fahadchowdhury66779@gmail.com",
-              subject: "Contact Form Message",
+              to: "srcn.institute@gmail.com",
+              subject: "Contact Form Srcn college test",
               html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
             };
             contactEmail.sendMail(mail, (error) => {
