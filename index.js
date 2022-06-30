@@ -39,8 +39,8 @@ function verifyJWT(req, res, next) {
     secure: true,
    
         auth: {
-            user: "moviedekhtam24hr@gmail.com",
-            pass: "",
+            user: `${process.env.GMAIL_USER}`,
+            pass: `${process.env.GMAIL_PASS}`,
           },
    
     
