@@ -40,7 +40,7 @@ function verifyJWT(req, res, next) {
    
         auth: {
             user: "moviedekhtam24hr@gmail.com",
-            pass: "iivwrgzvxpnryydb",
+            pass: "",
           },
    
     
