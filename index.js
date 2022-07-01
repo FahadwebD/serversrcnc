@@ -433,12 +433,17 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         })
         //staff management 
 
-        app.post('/staff', verifyJWT,verifyAdmin,  async (req, res) => {
+        app.post('/staff',   async (req, res) => {
+
+            console.log('hit')
             const name = req.body.name;
             const designation = req.body.designation;
             const categoryStaff = req.body.categoryStaff;
-
             const mobile = req.body.mobile;
+            const rank = req.body.rank;
+            const speech = req.body.speech
+            
+            
             const pic = req.files.image;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
@@ -447,6 +452,8 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
                 name,
                 designation,
                 categoryStaff,
+                rank,
+                speech,
                 mobile,
                 image: imageBuffer
             }
@@ -454,12 +461,22 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             res.json(result);
         })
         app.get('/staff', async (req, res) => {
+            console.log()
             const cursor = staffCollection.find({});
             const saffs = await cursor.toArray();
             res.json(saffs);
         });
+        app.get('/staff/:id', async (req, res) => {
 
-        app.delete('/staff/:id' , verifyJWT, verifyAdmin, async(req , res)=>{
+            
+            const query = { _id: ObjectId(req.params.id) }
+            console.log(query)
+            const staff = await staffCollection.findOne(query);
+      
+            res.json(staff);
+        });
+       
+        app.delete('/staff/:id', async(req , res)=>{
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const data = await staffCollection.deleteOne(query);
@@ -467,19 +484,21 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             res.json(data);
         })
 
-        app.put('/staff/edit',verifyJWT, verifyAdmin,  async(req,res)=>{
+        app.patch('/staff/edit/:id', async(req,res)=>{
         
-            const id = req.body._id
+            const id = req.params.id
             const name = req.body.name;
             const designation = req.body.designation;
             const categoryStaff = req.body.categoryStaff;
             const mobile = req.body.mobile;
+            const rank = req.body.rank;
+            const speech = req.body.speech
             
            console.log(id)
             const filter = {_id: ObjectId(id)};
             console.log(filter)
             
-            const updateDoc = {$set:  {name:name, designation:designation, categoryStaff:categoryStaff, mobile:mobile} };
+            const updateDoc = {$set:  {name:name, designation:designation, categoryStaff:categoryStaff, mobile:mobile, rank:rank , speech:speech} };
           
             const result = await staffCollection.updateOne(filter, updateDoc );
             console.log(result)
