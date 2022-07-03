@@ -74,11 +74,12 @@ async function run (){
         app.post("/contact", (req, res) => {
             const name = req.body.name;
             const email = req.body.email;
+            const subject = req.body.subject
             const message = req.body.message; 
             const mail = {
               from: name,
               to: "srcn.institute@gmail.com",
-              subject: "Contact Form Srcn college test",
+              subject: `${subject}`,
               html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
             };
             contactEmail.sendMail(mail, (error) => {
