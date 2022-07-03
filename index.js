@@ -232,7 +232,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         
             const id = req.body._id
             const welcomeMassage = req.body.massage;
-            const youtubeLink = req.body.youtube;
+            const youtubeLink = req.body.linkYoutube;
             
         
             const filter = {_id: ObjectId(id)};
