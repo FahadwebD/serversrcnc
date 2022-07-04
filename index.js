@@ -293,7 +293,21 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const saffs = await cursor.toArray();
             res.json(saffs);
         });
+        app.get('/gallary/:c', async (req, res) => {
+            const c = req.params.c
 
+            let cursor = {}
+            if(c == 'all'){
+              cursor = gallaryCollection.find({});
+            }
+            else{
+                const query = { category:c  };
+                cursor = gallaryCollection.find(query);
+            }
+            
+            const saffs = await cursor.toArray();
+            res.json(saffs);
+        });
         app.delete('/gallary/:id' ,  async(req , res)=>{
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
