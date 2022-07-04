@@ -69,6 +69,8 @@ async function run (){
         const userCollection = database.collection('users')
         const noticeCollection = database.collection('notice')
         const eventCollection = database.collection('event')
+        const facilitiesCollection = database.collection('facilities')
+
         const gallaryCollection = database.collection('gallary')
 
         app.post("/contact", (req, res) => {
@@ -446,6 +448,72 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             console.log('deleted item ' , data)
             res.json(data);
         })
+
+        //facilities manage
+
+
+         app.post('/facilities',   async (req, res) => {
+            const headline = req.body.headline;
+            const date = req.body.date;
+            const facilities = req.body.facilities;
+            const pic = req.files.image;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const data = {
+                headline,
+                date,
+                facilities,
+                image: imageBuffer
+            }
+            const result = await facilitiesCollection.insertOne(data);
+            res.json(result);
+        })
+
+        app.get('/facilities', async (req, res) => {
+            const cursor = facilitiesCollection.find({});
+            const saffs = await cursor.toArray();
+            res.json(saffs);
+        });
+        app.get('/facilities/:id', async (req, res) => {
+
+            const query = { _id: ObjectId(req.params.id) }
+            
+            const notice = await facilitiesCollection.findOne(query);
+      
+            res.json(notice);
+        });
+        
+        app.delete('/facilities/:id' ,  async(req , res)=>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const data = await facilitiesCollection.deleteOne(query);
+            console.log('deleted item ' , data)
+            res.json(data);
+        })
+
+
+        app.put('/facilities/edit/:id', async(req,res)=>{
+        
+            const id = req.params.id
+            const headline = req.body.headline;
+         
+            const facilities = req.body.facilities;
+            
+            
+    
+        
+            const filter = {_id: ObjectId(id)};
+            
+            
+            const updateDoc = {$set:  {headline:headline, facilities:facilities} };
+          
+            const result = await facilitiesCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
+
+
         //staff management 
 
         app.post('/staff',   async (req, res) => {
