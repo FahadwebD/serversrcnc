@@ -70,6 +70,8 @@ async function run (){
         const noticeCollection = database.collection('notice')
         const eventCollection = database.collection('event')
         const facilitiesCollection = database.collection('facilities')
+        const InfoCollection = database.collection('info')
+        
 
         const gallaryCollection = database.collection('gallary')
 
@@ -674,10 +676,153 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             res.json(data);
         })
 
+ //information
+
+        app.post('/info',   async (req, res) => {
+            const session = req.body.session;
+            const maleGenaral = req.body.maleGenaral;
+            const malePoor = req.body.malePoor;
+     
+        const femaleGenaral= req.body.femaleGenaral;
+            const  femalePoor = req.body.femalePoor;
+        const numbers=req.body.numbers;
+       const enrolled= req.body.enrolled;
+
+
+            const data = {
+                session,
+                maleGenaral,
+        malePoor,
+        femaleGenaral,
+        femalePoor ,
+        numbers,
+        enrolled,
+     
+            }
+            const result = await InfoCollection.insertOne(data);
+            res.json(result);
+        })
+
+        app.get('/info', async (req, res) => {
+            const cursor = InfoCollection.find({});
+            const saffs = await cursor.toArray();
+            res.json(saffs);
+        });
+        app.get('/info/:id', async (req, res) => {
+            const query = { _id: ObjectId(req.params.id) }
+            
+            const notice = await InfoCollection.findOne(query);
+      
+            res.json(notice);
+        });
+        
+        app.delete('/info/:id' ,  async(req , res)=>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const data = await InfoCollection.deleteOne(query);
+            console.log('deleted item ' , data)
+            res.json(data);
+        })
+
+
+        app.put('/info/edit/:id', async(req,res)=>{
+        
+            const id = req.params.id
+            const headline = req.body.headline;
+         
+            const notice = req.body.notice;
+            
+        const session = req.body.session;
+        const maleGenaral = req.body.maleGenaral;
+        const malePoor = req.body.malePoor;
+ 
+    const femaleGenaral= req.body.femaleGenaral;
+        const  femalePoor = req.body.femalePoor;
+    const numbers=req.body.numbers;
+   const enrolled= req.body.enrolled;
+    
+        
+            const filter = {_id: ObjectId(id)};
+            
+            
+            const updateDoc = {$set:  {session :session , maleGenaral:maleGenaral ,malePoor:malePoor ,femaleGenaral:femaleGenaral,femalePoor:femalePoor,numbers:numbers,enrolled:enrolled} };
+          
+            const result = await InfoCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
+
+        //course
+        
+      
+        app.post('/courses',   async (req, res) => {
+            const courseName = req.body.courseName;
+            const duration = req.body.duration;
+            const sit = req.body.sit;
+            const pic = req.files.image;
+            const picData = pic.data;
+            const encodedPic = picData.toString('base64');
+            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            const data = {
+                courseName,
+                duration,
+                sit,
+                image: imageBuffer
+            }
+            const result = await coursesCollection.insertOne(data);
+            res.json(result);
+        })
+
+        app.get('/courses', async (req, res) => {
+            const cursor = coursesCollection.find({});
+            const saffs = await cursor.toArray();
+            res.json(saffs);
+        });
+        app.get('/courses/:id', async (req, res) => {
+            const query = { _id: ObjectId(req.params.id) }
+            
+            const notice = await coursesCollection.findOne(query);
+      
+            res.json(notice);
+        });
+        
+        app.delete('/courses/:id' ,  async(req , res)=>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const data = await coursesCollection.deleteOne(query);
+            console.log('deleted item ' , data)
+            res.json(data);
+        })
+
+
+        app.put('/courses/edit/:id', async(req,res)=>{
+        
+   
+            const id = req.params.id;
+        const courseName = req.body.courseName;
+        const duration = req.body.duration;
+        const sit = req.body.sit;
+    
+        
+        const filter = {_id: ObjectId(id)};
+            
+            
+            const updateDoc = {$set:  {courseName:courseName, duration:duration , sit:sit} };
+          
+            const result = await coursesCollection.updateOne(filter, updateDoc );
+            console.log(result)
+            res.json(result)
+        }) 
+
+
     }
     
     
     
+
+
+
+
     finally{
         // await client.close();
     }
