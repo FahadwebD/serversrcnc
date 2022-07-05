@@ -527,7 +527,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const mobile = req.body.mobile;
             const rank = req.body.rank;
             const speech = req.body.speech
-            
+            const committee = req.body.committee;
             
             const pic = req.files.image;
             const picData = pic.data;
@@ -540,6 +540,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
                 rank,
                 speech,
                 mobile,
+                committee,
                 image: imageBuffer
             }
             const result = await staffCollection.insertOne(data);
@@ -577,13 +578,14 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const categoryStaff = req.body.categoryStaff;
             const mobile = req.body.mobile;
             const rank = req.body.rank;
-            const speech = req.body.speech
+            const speech = req.body.speech;
+            const committee= req.body.committee
             
            console.log(id)
             const filter = {_id: ObjectId(id)};
             console.log(filter)
             
-            const updateDoc = {$set:  {name:name, designation:designation, categoryStaff:categoryStaff, mobile:mobile, rank:rank , speech:speech} };
+            const updateDoc = {$set:  {name:name, designation:designation, categoryStaff:categoryStaff, mobile:mobile, rank:rank , speech:speech , committee:committee} };
           
             const result = await staffCollection.updateOne(filter, updateDoc );
             console.log(result)
@@ -687,7 +689,9 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const  femalePoor = req.body.femalePoor;
         const numbers=req.body.numbers;
        const enrolled= req.body.enrolled;
-
+       const course = req.body.course;
+       const courseId = req.body.courseId
+    
 
             const data = {
                 session,
@@ -697,6 +701,8 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         femalePoor ,
         numbers,
         enrolled,
+        course,
+        courseId 
      
             }
             const result = await InfoCollection.insertOne(data);
@@ -705,6 +711,13 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
 
         app.get('/info', async (req, res) => {
             const cursor = InfoCollection.find({});
+            const saffs = await cursor.toArray();
+            res.json(saffs);
+        });
+        app.get('/info/:course', async (req, res) => {
+            console.log(req.params.course)
+            const query = { courseId:(req.params.course) }
+            const cursor = InfoCollection.find(query);
             const saffs = await cursor.toArray();
             res.json(saffs);
         });
@@ -728,9 +741,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         app.put('/info/edit/:id', async(req,res)=>{
         
             const id = req.params.id
-            const headline = req.body.headline;
-         
-            const notice = req.body.notice;
+
             
         const session = req.body.session;
         const maleGenaral = req.body.maleGenaral;
@@ -740,12 +751,13 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         const  femalePoor = req.body.femalePoor;
     const numbers=req.body.numbers;
    const enrolled= req.body.enrolled;
-    
+   const course= req.body.course;
+
         
             const filter = {_id: ObjectId(id)};
             
             
-            const updateDoc = {$set:  {session :session , maleGenaral:maleGenaral ,malePoor:malePoor ,femaleGenaral:femaleGenaral,femalePoor:femalePoor,numbers:numbers,enrolled:enrolled} };
+            const updateDoc = {$set:  {session :session , maleGenaral:maleGenaral ,malePoor:malePoor ,femaleGenaral:femaleGenaral,femalePoor:femalePoor,numbers:numbers,enrolled:enrolled ,course:course} };
           
             const result = await InfoCollection.updateOne(filter, updateDoc );
             console.log(result)
@@ -778,6 +790,16 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             const saffs = await cursor.toArray();
             res.json(saffs);
         });
+
+        app.get('/coursesInfo/:id', async (req, res) => {
+            const query = { _id: ObjectId(req.params.id) }
+            
+            const notice = await coursesCollection.findOne(query);
+      
+            res.json(notice);
+        });
+
+
         app.get('/courses/:id', async (req, res) => {
             const query = { _id: ObjectId(req.params.id) }
             
