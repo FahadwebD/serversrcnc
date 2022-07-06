@@ -232,7 +232,7 @@ async function run (){
         })
 
 
-app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
+app.put('/welcome/edit',  async(req,res)=>{
         
             const id = req.body._id
             const welcomeMassage = req.body.massage;
