@@ -595,7 +595,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         //student Manage 
 
 
-        app.post('/student',verifyJWT, verifyAdmin, async (req, res) => {
+        app.post('/student', async (req, res) => {
             const name = req.body.name;
             const roll = req.body.roll;
             const sessionStart = req.body.sessionStart;
@@ -670,7 +670,7 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
         });
 
 
-        app.delete('/student/:id' , verifyJWT, verifyAdmin, async(req , res)=>{
+        app.delete('/student/:id' ,  async(req , res)=>{
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const data = await studentCollection.deleteOne(query);
