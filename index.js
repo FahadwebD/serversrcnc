@@ -557,9 +557,9 @@ app.put('/welcome/edit', verifyJWT, verifyAdmin, async(req,res)=>{
             
             const query = { _id: ObjectId(req.params.id) }
             console.log(query)
-            const staff = await staffCollection.findOne(query);
+            const staf = await staffCollection.findOne(query);
       
-            res.json(staff);
+            res.json(staf);
         });
        
         app.delete('/staff/:id', async(req , res)=>{
