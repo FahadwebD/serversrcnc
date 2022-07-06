@@ -147,7 +147,7 @@ async function run (){
 
         //banner data 
 
-        app.post('/banner', verifyJWT, verifyAdmin, async (req, res) => {
+        app.post('/banner',  async (req, res) => {
             const caption = req.body.caption;
             const pic = req.files.image;
             console.log(pic)
@@ -169,7 +169,7 @@ async function run (){
             res.json(banners);
         });
 
-        app.delete('/banner/:id' , verifyJWT, verifyAdmin, async(req , res)=>{
+        app.delete('/banner/:id' ,  async(req , res)=>{
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const data = await bannerCollection.deleteOne(query);
@@ -177,7 +177,7 @@ async function run (){
             res.json(data);
         })
 
-        app.put('/banner/edit', verifyJWT, verifyAdmin, async(req,res)=>{
+        app.put('/banner/edit',  async(req,res)=>{
         
             const id = req.body._id
             const caption = req.body.caption;
