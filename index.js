@@ -78,13 +78,15 @@ async function run (){
         app.post("/contact", (req, res) => {
             const name = req.body.name;
             const email = req.body.email;
+            const mobile = req.body.mobile;
+
             const subject = req.body.subject
             const message = req.body.message; 
             const mail = {
               from: name,
               to: "srcn.institute@gmail.com",
               subject: `${subject}`,
-              html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p>`,
+              html: `<p>Name: ${name}</p><p>Email: ${email}</p><p>Mobile: ${mobile}</p><p>Message: ${message}</p>`,
             };
             contactEmail.sendMail(mail, (error) => {
               if (error) {
@@ -771,6 +773,8 @@ app.put('/welcome/edit',  async(req,res)=>{
             const courseName = req.body.courseName;
             const duration = req.body.duration;
             const sit = req.body.sit;
+            const requirements = req.body.requirements;
+
             const pic = req.files.image;
             const picData = pic.data;
             const encodedPic = picData.toString('base64');
@@ -779,6 +783,7 @@ app.put('/welcome/edit',  async(req,res)=>{
                 courseName,
                 duration,
                 sit,
+                requirements,
                 image: imageBuffer
             }
             const result = await coursesCollection.insertOne(data);
@@ -824,12 +829,13 @@ app.put('/welcome/edit',  async(req,res)=>{
         const courseName = req.body.courseName;
         const duration = req.body.duration;
         const sit = req.body.sit;
+        const requirements= req.body.requirements;
     
         
         const filter = {_id: ObjectId(id)};
             
             
-            const updateDoc = {$set:  {courseName:courseName, duration:duration , sit:sit} };
+            const updateDoc = {$set:  {courseName:courseName, duration:duration , sit:sit , requirements:requirements} };
           
             const result = await coursesCollection.updateOne(filter, updateDoc );
             console.log(result)
