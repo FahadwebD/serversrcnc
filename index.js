@@ -852,7 +852,7 @@ app.put('/welcome/edit',  async(req,res)=>{
 
 
     finally{
-        // await client.close();
+        // fawait client.close();
     }
 
 
