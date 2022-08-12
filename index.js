@@ -454,7 +454,13 @@ app.put('/welcome/edit',  async(req,res)=>{
             console.log('deleted item ' , data)
             res.json(data);
         })
-
+        app.get('/event/:id', async (req, res) => {
+            const query = { _id: ObjectId(req.params.id) }
+            
+            const notice = await eventCollection.findOne(query);
+      
+            res.json(notice);
+        });
         //facilities manage
 
 
