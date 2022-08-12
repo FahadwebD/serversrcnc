@@ -71,6 +71,8 @@ async function run (){
         const eventCollection = database.collection('event')
         const facilitiesCollection = database.collection('facilities')
         const InfoCollection = database.collection('info')
+        const AnotherInfoCollection = database.collection('anotherinfo')
+
         
 
         const gallaryCollection = database.collection('gallary')
