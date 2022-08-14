@@ -607,19 +607,22 @@ app.put('/welcome/edit',  async(req,res)=>{
 
         app.post('/student', async (req, res) => {
             const name = req.body.name;
-            const roll = req.body.roll;
+            const fatherName = req.body.fatherName;
+            const motherName = req.body.motherName;
+            const courseId = req.body.courseId
+             const roll = req.body.roll;
             const sessionStart = req.body.sessionStart;
             const sessionEnd = req.body.sessionEnd;
             const regNo = req.body.regNo;
             const course = req.body.course;
             const category = req.body.category;
             const mobile = req.body.mobile;
-            const pic = req.files.image;
-            const picData = pic.data;
-            const encodedPic = picData.toString('base64');
-            const imageBuffer = Buffer.from(encodedPic, 'base64');
+            
             const data = {
                 name,
+                fatherName,
+                motherName,
+                courseId,
                 roll,
                 regNo,
                 category,
@@ -627,7 +630,7 @@ app.put('/welcome/edit',  async(req,res)=>{
                 mobile,
                 sessionStart,
                 sessionEnd,
-                image: imageBuffer
+                
             }
             const result = await studentCollection.insertOne(data);
             res.json(result);
