@@ -786,16 +786,13 @@ app.put('/welcome/edit',  async(req,res)=>{
             const sit = req.body.sit;
             const requirements = req.body.requirements;
 
-            const pic = req.files.image;
-            const picData = pic.data;
-            const encodedPic = picData.toString('base64');
-            const imageBuffer = Buffer.from(encodedPic, 'base64');
+         
             const data = {
                 courseName,
                 duration,
                 sit,
                 requirements,
-                image: imageBuffer
+               
             }
             const result = await coursesCollection.insertOne(data);
             res.json(result);
