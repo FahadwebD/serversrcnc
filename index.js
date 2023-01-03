@@ -57,7 +57,7 @@ function verifyJWT(req, res, next) {
 async function run (){
 
     try{
-        await client.connect();
+       client.connect();
         const database = client.db('srcnc');
         const coursesCollection = database.collection('courses');
         const bannerCollection = database.collection('banner');
